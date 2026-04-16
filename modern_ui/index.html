@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BusTicket - Your Premier Travel Partner</title>
+    <meta name="description" content="Book your bus tickets online with ease. Safe, secure, and hassle-free booking experience.">
+    <link rel="stylesheet" href="style.css">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header id="header">
+        <div class="container nav-container">
+            <nav>
+                <a href="index.html" class="logo"><i class="fas fa-bus-alt"></i> BUSTICKET</a>
+                <ul class="nav-links" id="nav-links">
+                    <li><a href="#home" class="active">Home</a></li>
+                    <li><a href="findbus.html">Find Bus</a></li>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+                <div class="menu-toggle" id="mobile-menu">
+                    <i class="fas fa-bars"></i>
+                </div>
+                <div class="btn-auth" id="auth-buttons">
+                    <a href="signin.html" class="btn btn-outline">Log In</a>
+                    <a href="signup.html" class="btn btn-primary">Sign Up</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <h1>Travel Beyond Boundaries</h1>
+            <p>Your journey is our priority. Experience the next generation of bus travel with premium comfort, real-time tracking, and unbeatable prices.</p>
+            <div class="hero-btns">
+                <a href="findbus.html" class="btn btn-primary btn-lg">Book Your Seat</a>
+                <a href="#about" class="btn btn-outline btn-lg">Discover More</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="services" id="services">
+        <div class="container">
+            <h2 class="section-title">Why Choose Us?</h2>
+            <div class="services-grid">
+                <div class="service-card">
+                    <i class="fas fa-shield-alt"></i>
+                    <h3>Secure Booking</h3>
+                    <p>Your transactions are encrypted and safe with our multi-layer security protocols.</p>
+                </div>
+                <div class="service-card">
+                    <i class="fas fa-clock"></i>
+                    <h3>Punctual Service</h3>
+                    <p>We value your time. Our partner buses are strictly monitored for timeliness.</p>
+                </div>
+                <div class="service-card">
+                    <i class="fas fa-headset"></i>
+                    <h3>24/7 Support</h3>
+                    <p>Our dedicated support team is here to help you at any step of your journey.</p>
+                </div>
+                <div class="service-card">
+                    <i class="fas fa-tags"></i>
+                    <h3>Best Prices</h3>
+                    <p>Enjoy exclusive deals and the lowest fare guarantees on every booking.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="services" id="about" style="background: var(--bg-light);">
+        <div class="container">
+            <div style="display: flex; align-items: center; gap: 50px; text-align: left; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 300px;">
+                    <h2 style="font-size: 2.5rem; margin-bottom: 20px;">We Provide the Best Bus Booking Experience</h2>
+                    <p style="margin-bottom: 30px; color: #666;">Founded in 2026, BusTicket has grown to become the most trusted platform for travelers. We connect thousands of routes across the country, providing a seamless experience from booking to arrival.</p>
+                    <ul style="margin-bottom: 30px;">
+                        <li style="margin-bottom: 10px;"><i class="fas fa-check-circle" style="color: var(--primary-color); margin-right: 10px;"></i> Advanced GPS Tracking</li>
+                        <li style="margin-bottom: 10px;"><i class="fas fa-check-circle" style="color: var(--primary-color); margin-right: 10px;"></i> Verified Bus Operators</li>
+                        <li style="margin-bottom: 10px;"><i class="fas fa-check-circle" style="color: var(--primary-color); margin-right: 10px;"></i> Flexible Cancellation Policy</li>
+                    </ul>
+                    <a href="signup.html" class="btn btn-primary">Join Now</a>
+                </div>
+                <div style="flex: 1; min-width: 300px; border-radius: 20px; overflow: hidden; box-shadow: var(--shadow);">
+                    <img src="assets/bus home.jpg" alt="Bus Journey" style="width: 100%; display: block;">
+                </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="services" id="contact" style="background: white;">
+        <div class="container">
+            <h2 class="section-title">Get in Touch</h2>
+            <div style="display: flex; gap: 40px; flex-wrap: wrap; text-align: left;">
+                <div style="flex: 1; min-width: 300px;">
+                    <div style="background: var(--bg-light); padding: 40px; border-radius: 20px; margin-bottom: 30px; box-shadow: 0 5px 20px rgba(0,0,0,0.03);">
+                        <h4 style="margin-bottom: 20px; font-size: 1.2rem;"><i class="fas fa-map-marker-alt" style="color: var(--primary-color);"></i> Our Headquarters</h4>
+                        <p style="color: #666; margin-bottom: 10px;">123 Transit Boulevard, Suite 500<br>Metropolis City, NY 10001</p>
+                    </div>
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                        <div style="flex: 1; min-width: 150px; background: var(--bg-light); padding: 30px; border-radius: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.03);">
+                            <h4 style="margin-bottom: 10px; font-size: 1.1rem;"><i class="fas fa-phone-alt" style="color: var(--primary-color);"></i> Phone</h4>
+                            <p style="color: #666;">+1 (800) 123-4567<br>+1 (800) 987-6543</p>
+                        </div>
+                        <div style="flex: 1; min-width: 150px; background: var(--bg-light); padding: 30px; border-radius: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.03);">
+                            <h4 style="margin-bottom: 10px; font-size: 1.1rem;"><i class="fas fa-envelope" style="color: var(--primary-color);"></i> Email</h4>
+                            <p style="color: #666;">support@busticket.com<br>info@busticket.com</p>
+                        </div>
+                    </div>
+                </div>
+                <div style="flex: 1; min-width: 300px; background: var(--bg-light); padding: 40px; border-radius: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.05);">
+                    <h3 style="margin-bottom: 20px;">Send us a Message</h3>
+                    <form onsubmit="event.preventDefault(); alert('Thank you for reaching out! Our team will contact you shortly.'); this.reset();">
+                        <div class="input-group" style="margin-bottom: 20px;">
+                            <label style="color: #444;">Full Name</label>
+                            <input type="text" placeholder="John Doe" required style="width: 100%; border: 1px solid #ddd; padding: 12px; border-radius: 8px; color: #333; background: white;">
+                        </div>
+                        <div class="input-group" style="margin-bottom: 20px;">
+                            <label style="color: #444;">Email Address</label>
+                            <input type="email" placeholder="john@example.com" required style="width: 100%; border: 1px solid #ddd; padding: 12px; border-radius: 8px; color: #333; background: white;">
+                        </div>
+                        <div class="input-group" style="margin-bottom: 20px;">
+                            <label style="color: #444;">Your Message</label>
+                            <textarea placeholder="How can we help you?" required style="width: 100%; border: 1px solid #ddd; padding: 12px; border-radius: 8px; color: #333; background: white; resize: none; min-height: 120px; font-family: inherit; font-size: 14px; outline: none; transition: border-color 0.3s;"></textarea>
+                        </div>
+                        <style>textarea:focus { border-color: var(--primary-color) !important; }</style>
+                        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 14px; font-size: 16px;">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer style="background: var(--bg-dark); color: white; padding: 80px 0 20px;">
+        <div class="container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; margin-bottom: 50px;">
+            <div>
+                <a href="#" class="logo" style="color: var(--accent-color); font-size: 24px; margin-bottom: 20px; display: block;">BUSTICKET</a>
+                <p style="color: #ccc; font-size: 14px;">The leading bus ticket booking platform for a safe and comfortable journey.</p>
+            </div>
+            <div>
+                <h4 style="margin-bottom: 20px;">Quick Links</h4>
+                <ul style="color: #ccc; font-size: 14px;">
+                    <li style="margin-bottom: 10px;"><a href="#home">Home</a></li>
+                    <li style="margin-bottom: 10px;"><a href="findbus.html">Find Bus</a></li>
+                    <li style="margin-bottom: 10px;"><a href="#services">Services</a></li>
+                    <li style="margin-bottom: 10px;"><a href="#about">About</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 style="margin-bottom: 20px;">Support</h4>
+                <ul style="color: #ccc; font-size: 14px;">
+                    <li style="margin-bottom: 10px;"><a href="admin.html" style="color: var(--accent-color); font-weight: 600;"><i class="fas fa-user-shield"></i> Admin Portal</a></li>
+                    <li style="margin-bottom: 10px;"><a href="#">Privacy Policy</a></li>
+                    <li style="margin-bottom: 10px;"><a href="#">Terms of Service</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 style="margin-bottom: 20px;">Newsletter</h4>
+                <p style="color: #ccc; font-size: 14px; margin-bottom: 20px;">Subscribe for latest updates and offers.</p>
+                <div style="display: flex;">
+                    <input type="email" placeholder="Your Email" style="padding: 10px; border-radius: 5px 0 0 5px; border: none; flex: 1;">
+                    <button class="btn btn-primary" style="border-radius: 0 5px 5px 0;">Send</button>
+                </div>
+            </div>
+        </div>
+        <div class="container" style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; text-align: center; font-size: 13px; color: #888;">
+            <p>&copy; 2026 BusTicket Booking System. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Dynamic Logic Script -->
+    <script>
+        // Initialize Database with Defaults
+        const STORAGE_KEY = 'bus_data';
+        const defaultBuses = [
+            { id: 1, name: 'Royal Express', type: 'A/C Sleeper (2+1)', from: 'New York', to: 'Washington D.C.', date: '2026-03-20', departure: '08:30 PM', arrival: '06:15 AM', duration: '9h 45m', price: 55, seats: 18, rating: 4.8 },
+            { id: 2, name: 'Galaxy Multi-Axle', type: 'Volvo A/C Semi Sleeper', from: 'New York', to: 'Washington D.C.', date: '2026-03-20', departure: '10:00 PM', arrival: '07:45 AM', duration: '9h 45m', price: 48, seats: 4, rating: 4.5 },
+            { id: 3, name: 'Travelers Choice', type: 'Luxury Non-A/C Sleeper', from: 'Boston', to: 'New York', date: '2026-03-22', departure: '07:15 PM', arrival: '05:00 AM', duration: '9h 45m', price: 35, seats: 22, rating: 4.2 }
+        ];
+
+        if (!localStorage.getItem(STORAGE_KEY)) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultBuses));
+        }
+
+        // Handle Search Redirection (if search form exists on this page)
+        const searchForm = document.getElementById('search-form');
+        if (searchForm) {
+            searchForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const from = document.getElementById('search-from').value;
+                const to = document.getElementById('search-to').value;
+                const date = document.getElementById('search-date').value;
+                
+                window.location.href = `findbus.html?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&date=${encodeURIComponent(date)}`;
+            });
+        }
+
+        // Scroll Header & Scrollspy Script
+        window.addEventListener('scroll', function() {
+            const header = document.getElementById('header');
+            const navLinks = document.querySelectorAll('.nav-links a[href^="#"]');
+            const sections = document.querySelectorAll('section[id]');
+
+            // 1. Dynamic Header Class
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+
+            // 2. Scrollspy Logic
+            let current = "";
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (window.scrollY >= (sectionTop - 150)) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // Mobile Menu Toggle Script
+        const mobileMenu = document.getElementById('mobile-menu');
+        const navLinks = document.getElementById('nav-links');
+
+        mobileMenu.addEventListener('click', function() {
+            navLinks.classList.toggle('active');
+            const icon = mobileMenu.querySelector('i');
+            icon.classList.toggle('fa-bars');
+            icon.classList.toggle('fa-times');
+        });
+
+        // Close menu on link click
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+                mobileMenu.querySelector('i').classList.add('fa-bars');
+                mobileMenu.querySelector('i').classList.remove('fa-times');
+            });
+        });
+
+        // ── Auth UI Logic ──────────────────────────────────────────────────
+        function checkAuthStatus() {
+            const userStr = localStorage.getItem('loggedInUser');
+            const authContainer = document.getElementById('auth-buttons');
+            
+            if (userStr && authContainer) {
+                const user = JSON.parse(userStr);
+                const firstName = user.name || user.first_name || user.username || 'User';
+                
+                let adminBtn = '';
+                if (user.role === 'admin' || user.role === 'operator') {
+                    adminBtn = `
+                        <a href="admin.html" class="btn btn-primary" style="padding: 8px 16px; font-size: 12px; margin-right: 5px;">
+                            <i class="fas fa-user-shield"></i> Back to Admin
+                        </a>
+                    `;
+                }
+
+                authContainer.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        ${adminBtn}
+                        <a href="dashboard.html" title="Go to Dashboard: ${firstName}" class="profile-avatar">
+                            ${firstName[0].toUpperCase()}
+                        </a>
+                        <button onclick="logoutUser()" class="btn btn-outline" style="padding: 8px 18px; font-size: 13px;">Logout</button>
+                    </div>
+                `;
+            }
+        }
+
+        function logoutUser() {
+            localStorage.removeItem('loggedInUser');
+            localStorage.removeItem('authToken');
+            window.location.reload();
+        }
+
+        checkAuthStatus();
+    </script>
+</body>
+</html>

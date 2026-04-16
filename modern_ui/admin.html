@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - BusTicket</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        .admin-main { padding: 120px 0 60px; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 15px; text-align: left; }
+        .btn-delete { color: #ff5252; cursor: pointer; border: none; background: none; font-size: 18px; transition: var(--transition); }
+        .btn-delete:hover { color: #ff1744; transform: scale(1.1); }
+        .btn-edit { color: var(--accent-color); cursor: pointer; border: none; background: none; font-size: 18px; transition: var(--transition); margin-right: 15px; }
+        .btn-edit:hover { color: #fff; transform: scale(1.1); }
+        .alert { display: none; padding: 15px 20px; border-radius: 12px; font-size: 14px; margin-bottom: 20px; align-items: center; gap: 10px; backdrop-filter: blur(10px); }
+        .alert-success { background: rgba(76, 175, 80, 0.2); color: #81c784; border: 1px solid rgba(76, 175, 80, 0.3); }
+        .alert-error { background: rgba(244, 67, 54, 0.2); color: #e57373; border: 1px solid rgba(244, 67, 54, 0.3); }
+        .server-status { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; padding: 8px 16px; border-radius: 50px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.1); color: #fff; }
+        .dot-online { width: 10px; height: 10px; border-radius: 50%; background: #4caf50; box-shadow: 0 0 10px #4caf50; }
+        .dot-offline { width: 10px; height: 10px; border-radius: 50%; background: #f44336; box-shadow: 0 0 10px #f44336; }
+        .stat-label { font-size: 12px; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 1px; }
+        .stat-value { font-weight: 700; color: var(--accent-color); }
+
+        /* Modal Styles */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; backdrop-filter: blur(8px); align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease; }
+        .modal-overlay.active { display: flex; opacity: 1; }
+        .modal-content { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 30px; width: 90%; max-width: 700px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 50px rgba(0,0,0,0.5); position: relative; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; }
+        .modal-close { cursor: pointer; font-size: 24px; color: rgba(255,255,255,0.5); transition: 0.3s; }
+        .modal-close:hover { color: #fff; }
+    </style>
+</head>
+<body class="admin-page">
+    <!-- Header -->
+    <header id="header">
+        <div class="container nav-container">
+            <nav>
+                <a href="index.html" class="logo"><i class="fas fa-bus-alt"></i> BUSTICKET <span style="font-size: 12px; color: var(--accent-color);">ADMIN</span></a>
+                <ul class="nav-links" id="nav-links">
+                    <li><a href="index.html">View Site</a></li>
+                    <li><a href="#add-bus-section">Add Bus</a></li>
+                    <li><a href="#managed-buses-section">Managed Buses</a></li>
+                    <li><a href="#recent-bookings-section">Recent Bookings</a></li>
+                </ul>
+                <div class="btn-auth" id="admin-auth-header" style="display: flex; align-items: center; gap: 12px;">
+                    <!-- Avatar injected by script -->
+                    <a href="#" onclick="logoutAdmin()" class="btn btn-primary">Logout</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container admin-main">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 15px;">
+            <h2 style="color: #fff; text-shadow: 2px 2px 8px rgba(0,0,0,0.5);">Admin Dashboard</h2>
+            <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
+                <div id="server-status" class="server-status">
+                    <div class="dot-offline" id="status-dot"></div>
+                    <span id="status-text">Checking server...</span>
+                </div>
+                <div class="server-status" style="gap: 15px;">
+                    <span><span class="stat-label">Buses:</span> <span id="bus-count" class="stat-value">0</span></span>
+                    <span style="opacity: 0.3;">|</span>
+                    <span><span class="stat-label">Bookings:</span> <span id="booking-count" class="stat-value">0</span></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alert Banner -->
+        <div class="alert alert-success" id="alert-success"><i class="fas fa-check-circle"></i> <span id="success-msg"></span></div>
+        <div class="alert alert-error"   id="alert-error"><i class="fas fa-exclamation-circle"></i> <span id="error-msg"></span></div>
+
+        <!-- Add Bus Form -->
+        <div class="admin-card" id="add-bus-section">
+            <h3><i class="fas fa-plus-circle"></i> Add New Bus</h3>
+            <form id="add-bus-form">
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label>Bus Name</label>
+                        <input type="text" id="bus-name" placeholder="e.g. Royal Express" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Bus Type</label>
+                        <input type="text" id="bus-type" placeholder="e.g. A/C Sleeper" required>
+                    </div>
+                    <div class="input-group">
+                        <label>From</label>
+                        <input type="text" id="bus-from" placeholder="Departure City" required>
+                    </div>
+                    <div class="input-group">
+                        <label>To</label>
+                        <input type="text" id="bus-to" placeholder="Destination City" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Date</label>
+                        <input type="date" id="bus-date" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Price ($)</label>
+                        <input type="number" id="bus-price" placeholder="50" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Dep. Time</label>
+                        <input type="text" id="bus-dep" placeholder="08:00 PM" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Arr. Time</label>
+                        <input type="text" id="bus-arr" placeholder="06:00 AM" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Seats</label>
+                        <input type="number" id="bus-seats" placeholder="30">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary" id="add-btn"><i class="fas fa-plus"></i> Add Bus to System</button>
+            </form>
+        </div>
+
+        <!-- Bus List -->
+        <div class="admin-card" id="managed-buses-section">
+            <h3><i class="fas fa-list"></i> Managed Buses</h3>
+            <div style="overflow-x: auto;">
+                <table id="bus-table">
+                    <thead>
+                        <tr>
+                            <th>Bus Name</th>
+                            <th>Route</th>
+                            <th>Date</th>
+                            <th>Price</th>
+                            <th>Time</th>
+                            <th>Seats</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bus-list-body">
+                        <tr><td colspan="7" style="text-align:center;color:#888;padding:30px;">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Recent Bookings -->
+        <div class="admin-card" id="recent-bookings-section">
+            <h3><i class="fas fa-ticket-alt"></i> Recent Bookings</h3>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Booking Ref</th>
+                            <th>Passenger</th>
+                            <th>Bus</th>
+                            <th>Route</th>
+                            <th>Seats</th>
+                            <th>Amount</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bookings-body">
+                        <tr><td colspan="7" style="text-align:center;color:#888;padding:30px;">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Edit Bus Modal -->
+    <div class="modal-overlay" id="edit-bus-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 style="color: #fff; margin:0;"><i class="fas fa-edit"></i> Edit Bus Details</h3>
+                <span class="modal-close" onclick="closeEditModal()">&times;</span>
+            </div>
+            <form id="edit-bus-form">
+                <input type="hidden" id="edit-bus-id">
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label>Bus Name</label>
+                        <input type="text" id="edit-bus-name" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Bus Type</label>
+                        <input type="text" id="edit-bus-type" required>
+                    </div>
+                    <div class="input-group">
+                        <label>From</label>
+                        <input type="text" id="edit-bus-from" required>
+                    </div>
+                    <div class="input-group">
+                        <label>To</label>
+                        <input type="text" id="edit-bus-to" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Date</label>
+                        <input type="date" id="edit-bus-date" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Price ($)</label>
+                        <input type="number" id="edit-bus-price" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Dep. Time</label>
+                        <input type="text" id="edit-bus-dep" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Arr. Time</label>
+                        <input type="text" id="edit-bus-arr" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Seats</label>
+                        <input type="number" id="edit-bus-seats">
+                    </div>
+                </div>
+                <div style="display: flex; gap: 15px; margin-top: 10px;">
+                    <button type="submit" class="btn btn-primary" style="flex: 1;"><i class="fas fa-save"></i> Save Changes</button>
+                    <button type="button" class="btn" style="flex: 1; border: 1px solid rgba(255,255,255,0.2); background: transparent; color: #fff;" onclick="closeEditModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API = 'http://localhost:3000/api';
+
+        function showAlert(type, msg) {
+            document.getElementById('alert-success').style.display = 'none';
+            document.getElementById('alert-error').style.display   = 'none';
+            if (type === 'success') { document.getElementById('success-msg').textContent = msg; document.getElementById('alert-success').style.display = 'flex'; }
+            else                    { document.getElementById('error-msg').textContent   = msg; document.getElementById('alert-error').style.display   = 'flex'; }
+            setTimeout(() => { document.getElementById('alert-success').style.display = 'none'; document.getElementById('alert-error').style.display = 'none'; }, 4000);
+        }
+
+        function logoutAdmin() {
+            localStorage.removeItem('loggedInUser');
+            localStorage.removeItem('authToken');
+            window.location.href = 'signin.html?redirect=admin.html';
+        }
+
+        // ─── Check server health ──────────────────────────────────────────────
+        async function checkServerStatus() {
+            try {
+                const res = await fetch(`${API}/health`);
+                const data = await res.json();
+                if (data.success) {
+                    document.getElementById('status-dot').className = 'dot-online';
+                    document.getElementById('status-text').textContent = 'Server Online';
+                }
+            } catch {
+                document.getElementById('status-dot').className = 'dot-offline';
+                document.getElementById('status-text').textContent = 'Server Offline';
+            }
+        }
+
+        // Auth Check
+        const userStr = localStorage.getItem('loggedInUser');
+        if (!userStr) {
+            window.location.href = 'signin.html?redirect=admin.html';
+        } else {
+            const parsedUser = JSON.parse(userStr);
+            if (parsedUser.role !== 'admin' && parsedUser.role !== 'operator') {
+                alert('Access Denied: You need Admin or Operator privileges. Please sign in with an admin account.');
+                window.location.href = 'signin.html?redirect=admin.html';
+            }
+        }
+        const user = userStr ? JSON.parse(userStr) : {};
+
+        // ─── Load buses from API ──────────────────────────────────────────────
+        async function loadBuses() {
+            try {
+                let url = `${API}/buses`;
+                if (user.role === 'operator') url += `?operator_id=${user.id}`;
+                const res  = await fetch(url);
+                const data = await res.json();
+                document.getElementById('bus-count').textContent = data.count || 0;
+                const tbody = document.getElementById('bus-list-body');
+                tbody.innerHTML = '';
+                if (!data.buses || data.buses.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#888;padding:30px;">No buses found.</td></tr>';
+                    return;
+                }
+                data.buses.forEach(bus => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td><div style="font-weight:600;">${bus.name}</div><div style="font-size:11px;color:#888;">${bus.type}</div></td>
+                        <td style="font-size:13px;">${bus.from_city} → ${bus.to_city}</td>
+                        <td style="font-size:13px;">${bus.date}</td>
+                        <td style="font-weight:600;">$${bus.price}</td>
+                        <td style="font-size:12px;">${bus.departure} - ${bus.arrival}</td>
+                        <td style="font-size:13px;">${bus.seats}</td>
+                        <td style="display: flex; align-items: center; justify-content: flex-start;">
+                            <button class="btn-edit" onclick="openEditModal(${bus.id})"><i class="fas fa-edit"></i></button>
+                            <button class="btn-delete" onclick="deleteBus(${bus.id})"><i class="fas fa-trash-alt"></i></button>
+                        </td>`;
+                    tbody.appendChild(row);
+                });
+            } catch (err) {
+                document.getElementById('bus-list-body').innerHTML = '<tr><td colspan="7" style="text-align:center;color:#d32f2f;padding:30px;"><i class="fas fa-exclamation-triangle"></i> Cannot connect to server. Run: <code>node server.js</code></td></tr>';
+            }
+        }
+
+        // ─── Load bookings from API ───────────────────────────────────────────
+        async function loadBookings() {
+            try {
+                const res  = await fetch(`${API}/bookings`);
+                const data = await res.json();
+                document.getElementById('booking-count').textContent = data.count || 0;
+                const tbody = document.getElementById('bookings-body');
+                tbody.innerHTML = '';
+                if (!data.bookings || data.bookings.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#888;padding:30px;">No bookings yet.</td></tr>';
+                    return;
+                }
+                data.bookings.forEach(b => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td style="font-weight:600;color:var(--primary-color);">${b.booking_ref}</td>
+                        <td>${b.passenger}</td>
+                        <td>${b.bus_name}</td>
+                        <td style="font-size:13px;">${b.from_city} → ${b.to_city}</td>
+                        <td>${b.seats}</td>
+                        <td style="font-weight:600;">$${b.total_amount}</td>
+                        <td style="font-size:12px;">${new Date(b.booked_at).toLocaleDateString()}</td>`;
+                    tbody.appendChild(row);
+                });
+            } catch {}
+        }
+
+        // ─── Delete bus ───────────────────────────────────────────────────────
+        async function deleteBus(id) {
+            if (!confirm('Are you sure you want to delete this bus? This will remove all associated schedules.')) return;
+            try {
+                const res  = await fetch(`${API}/buses/${id}`, { method: 'DELETE' });
+                const data = await res.json();
+                if (data.success) { showAlert('success', data.message); loadBuses(); }
+                else               showAlert('error', data.message);
+            } catch { showAlert('error', 'Cannot connect to server.'); }
+        }
+
+        // ─── Edit Bus ────────────────────────────────────────────────────────────
+        async function openEditModal(id) {
+            try {
+                const res = await fetch(`${API}/buses/${id}`);
+                const data = await res.json();
+                if (data.success) {
+                    const bus = data.bus;
+                    document.getElementById('edit-bus-id').value = bus.id;
+                    document.getElementById('edit-bus-name').value = bus.name;
+                    document.getElementById('edit-bus-type').value = bus.type;
+                    document.getElementById('edit-bus-from').value = bus.from_city;
+                    document.getElementById('edit-bus-to').value = bus.to_city;
+                    document.getElementById('edit-bus-date').value = bus.date;
+                    document.getElementById('edit-bus-price').value = bus.price;
+                    document.getElementById('edit-bus-dep').value = bus.departure;
+                    document.getElementById('edit-bus-arr').value = bus.arrival;
+                    document.getElementById('edit-bus-seats').value = bus.seats;
+                    
+                    document.getElementById('edit-bus-modal').classList.add('active');
+                }
+            } catch (err) {
+                showAlert('error', 'Failed to load bus details.');
+            }
+        }
+
+        function closeEditModal() {
+            document.getElementById('edit-bus-modal').classList.remove('active');
+        }
+
+        document.getElementById('edit-bus-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('edit-bus-id').value;
+            const payload = {
+                name: document.getElementById('edit-bus-name').value,
+                type: document.getElementById('edit-bus-type').value,
+                from_city: document.getElementById('edit-bus-from').value,
+                to_city: document.getElementById('edit-bus-to').value,
+                date: document.getElementById('edit-bus-date').value,
+                price: document.getElementById('edit-bus-price').value,
+                departure: document.getElementById('edit-bus-dep').value,
+                arrival: document.getElementById('edit-bus-arr').value,
+                seats: document.getElementById('edit-bus-seats').value,
+                operator_id: user.id
+            };
+
+            try {
+                const res = await fetch(`${API}/buses/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showAlert('success', 'Bus updated successfully!');
+                    closeEditModal();
+                    loadBuses();
+                } else {
+                    showAlert('error', data.message);
+                }
+            } catch (err) {
+                showAlert('error', 'Failed to update bus.');
+            }
+        });
+
+        // ─── Add bus form ─────────────────────────────────────────────────────
+        document.getElementById('add-bus-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('add-btn');
+            btn.textContent = 'Adding...';
+            btn.disabled = true;
+
+            const body = {
+                name:      document.getElementById('bus-name').value,
+                type:      document.getElementById('bus-type').value,
+                from_city: document.getElementById('bus-from').value,
+                to_city:   document.getElementById('bus-to').value,
+                date:      document.getElementById('bus-date').value,
+                price:     document.getElementById('bus-price').value,
+                departure: document.getElementById('bus-dep').value,
+                arrival:   document.getElementById('bus-arr').value,
+                seats:     document.getElementById('bus-seats').value || 30,
+                operator_id: user.id
+            };
+
+            try {
+                const res  = await fetch(`${API}/buses`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                const data = await res.json();
+                if (data.success) { showAlert('success', data.message); this.reset(); loadBuses(); }
+                else               showAlert('error', data.message);
+            } catch { showAlert('error', 'Cannot connect to server. Make sure the backend is running.'); }
+
+            btn.innerHTML = '<i class="fas fa-plus"></i> Add Bus to System';
+            btn.disabled = false;
+        });
+
+        // ─── Scroll Dynamics & Scrollspy ─────────────────────────────────────────
+        window.addEventListener('scroll', function() {
+            const header = document.getElementById('header');
+            const navLinks = document.querySelectorAll('.nav-links a[href^="#"]');
+            const sections = document.querySelectorAll('.admin-card[id]');
+            
+            // 1. Dynamic Header Class
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+
+            // 2. Scrollspy Logic
+            let current = "";
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (window.scrollY >= (sectionTop - 150)) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // ─── Init ─────────────────────────────────────────────────────────────
+        if (user && (user.first_name || user.name || user.username)) {
+            const adminHeader = document.getElementById('admin-auth-header');
+            const name = user.first_name || user.name || user.username || 'A';
+            const initial = name[0].toUpperCase();
+            
+            const avatarLink = document.createElement('a');
+            avatarLink.href = 'dashboard.html';
+            avatarLink.className = 'profile-avatar';
+            avatarLink.title = `Admin Session: ${name}`;
+            avatarLink.textContent = initial;
+            
+            adminHeader.prepend(avatarLink);
+        }
+
+        checkServerStatus();
+        loadBuses();
+        loadBookings();
+
+    </script>
+</body>
+</html>

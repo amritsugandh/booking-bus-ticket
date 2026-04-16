@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard - BusTicket</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="dashboard-page">
+
+    <!-- Header Navigation -->
+    <header id="header" class="scrolled">
+        <div class="container nav-container">
+            <nav>
+                <a href="index.html" class="logo"><i class="fas fa-bus-alt"></i> BUSTICKET</a>
+                <ul class="nav-links" id="nav-links">
+                    <li><a href="findbus.html">Find Bus</a></li>
+                    <li><a href="dashboard.html" class="active">Dashboard</a></li>
+                </ul>
+                <div class="menu-toggle" id="mobile-menu">
+                    <i class="fas fa-bars"></i>
+                </div>
+                <div class="btn-auth" id="auth-buttons">
+                    <button class="btn btn-outline" onclick="logoutUser()">Logout</button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container" style="padding-top: 100px; padding-bottom: 60px; min-height: 90vh;">
+        
+        <div class="dash-layout">
+            <!-- Sidebar Navigation -->
+            <aside class="dash-sidebar">
+                <div class="dash-card" style="padding: 20px; text-align: center; margin-bottom: 20px;">
+                    <div style="width: 80px; height: 80px; border-radius: 50%; background: var(--primary-color); color: white; display: flex; align-items: center; justify-content: center; font-size: 30px; margin: 0 auto 15px; text-transform: uppercase;" id="profile-initial">-</div>
+                    <h3 id="profile-name" style="font-size: 1.1rem; margin-bottom: 5px;">Loading...</h3>
+                    <p id="profile-role" style="font-size: 12px; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px;">Member</p>
+                    <div id="sidebar-action-container"></div>
+                </div>
+
+                <ul class="dash-nav">
+                    <li class="dash-nav-item active" onclick="switchTab('bookings', this)"><i class="fas fa-ticket-alt"></i> My Bookings</li>
+                    <li class="dash-nav-item" onclick="switchTab('profile', this)"><i class="fas fa-user-edit"></i> Edit Profile</li>
+                    <li class="dash-nav-item" onclick="switchTab('wallet', this)"><i class="fas fa-wallet"></i> My Wallet</li>
+                    <li class="dash-nav-item" onclick="switchTab('security', this)"><i class="fas fa-shield-alt"></i> Security</li>
+                </ul>
+            </aside>
+
+            <!-- Main Content Area -->
+            <div class="dash-content">
+                
+                <!-- Tab: My Bookings -->
+                <div id="tab-bookings" class="tab-content active">
+                    <div class="dash-card">
+                        <div class="dash-card-header">
+                            <h3><i class="fas fa-ticket-alt"></i> My Bookings</h3>
+                            <div class="tab-pill-container">
+                                <span class="tab-pill active" onclick="filterBookings('all', this)">All</span>
+                                <span class="tab-pill" onclick="filterBookings('upcoming', this)">Upcoming</span>
+                                <span class="tab-pill" onclick="filterBookings('completed', this)">Past</span>
+                            </div>
+                        </div>
+                        <div id="bookings-list">
+                            <p style="text-align:center; padding:40px; color:#888;"><i class="fas fa-spinner fa-spin"></i> Loading your trips...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab: Edit Profile -->
+                <div id="tab-profile" class="tab-content" style="display:none;">
+                    <div class="dash-card">
+                        <div class="dash-card-header" style="background: linear-gradient(to right, #0d6efd0a, transparent); border-left: 4px solid var(--primary-color);">
+                            <h3 style="color: var(--primary-color);"><i class="fas fa-user-circle"></i> Personal Information</h3>
+                        </div>
+                        <form id="profile-form">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                                <div class="input-group">
+                                    <label>First Name</label>
+                                    <input type="text" id="edit-first-name" required>
+                                </div>
+                                <div class="input-group">
+                                    <label>Last Name</label>
+                                    <input type="text" id="edit-last-name">
+                                </div>
+                                <div class="input-group">
+                                    <label><i class="fas fa-envelope"></i> Email Address</label>
+                                    <input type="email" id="edit-email" readonly title="Email cannot be changed">
+                                </div>
+                                <div class="input-group">
+                                    <label><i class="fas fa-phone"></i> Phone Number</label>
+                                    <input type="text" id="edit-phone" placeholder="+1 (555) 000-0000" oninput="validateField(this, /^\+?[\d\s-]{10,}$/)">
+                                </div>
+                            </div>
+                            <div class="input-group" style="margin-bottom: 25px;">
+                                <label>Home Address</label>
+                                <textarea id="edit-address" style="width:100%; height:80px; padding:12px; border:1px solid #ddd; border-radius:10px; resize:none;"></textarea>
+                            </div>
+                            <div class="input-group" style="margin-bottom: 25px;">
+                                <label>Emergency Contact Name/Number</label>
+                                <input type="text" id="edit-emergency" placeholder="Name - Phone">
+                            </div>
+                            <button type="submit" class="btn btn-primary" id="save-profile-btn">Save Changes</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Tab: My Wallet -->
+                <div id="tab-wallet" class="tab-content" style="display:none;">
+                    <div class="wallet-card">
+                        <p style="text-transform: uppercase; font-size: 12px; letter-spacing: 2px; opacity: 0.8;">Total Balance</p>
+                        <div class="wallet-balance" id="wallet-balance-val">$0.00</div>
+                        <div style="margin-top: 20px; font-size: 14px;"><i class="fas fa-info-circle"></i> Funds can be used for any future booking.</div>
+                    </div>
+                    <div class="dash-card">
+                        <div class="dash-card-header"><h3>Recent Transactions</h3></div>
+                        <div id="wallet-transactions">
+                            <p style="color:#888; font-size:14px; text-align:center;">No recent transactions.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab: Security -->
+                <div id="tab-security" class="tab-content" style="display:none;">
+                    <div class="dash-card" style="max-width: 500px;">
+                        <div class="dash-card-header"><h3><i class="fas fa-lock"></i> Change Password</h3></div>
+                        <form id="password-form">
+                            <div class="input-group" style="margin-bottom: 20px;">
+                                <label>Current Password</label>
+                                <input type="password" id="old-password" required>
+                            </div>
+                            <div class="input-group" style="margin-bottom: 20px;">
+                                <label>New Password</label>
+                                <input type="password" id="new-password" required>
+                            </div>
+                                <div class="input-group" style="margin-bottom: 25px;">
+                                    <label><i class="fas fa-check-double"></i> Confirm New Password</label>
+                                    <input type="password" id="confirm-password" required oninput="validatePasswordMatch()">
+                                </div>
+                            <button type="submit" class="btn btn-primary" id="change-pass-btn">Update Password</button>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Invisible Printable Ticket Template -->
+    <div id="ticket-print-template" style="display:none;">
+        <div class="ticket-container" style="width: 650px; margin: 20px auto; border: 2px solid #eee;">
+            <div class="ticket-header">
+                <h2 style="color: var(--primary-color); margin: 0; font-size: 1.5rem;"><i class="fas fa-bus"></i> BUSTICKET E-TICKET</h2>
+                <div class="ticket-ref-box">
+                    <span class="ticket-ref-label">Reference ID</span><br>
+                    <span class="ticket-ref-value" id="print-ref-id">#BT-0000</span>
+                </div>
+            </div>
+
+            <div id="ticket-data" class="ticket-grid">
+                <!-- Data populated by printTicket() -->
+            </div>
+
+            <div class="ticket-total-display">
+                <span style="color: #666; font-weight: 500; font-size: 14px;">Total Amount (Paid)</span>
+                <span id="print-total-amount" style="font-size: 24px; font-weight: 800; color: var(--primary-color);">$0</span>
+            </div>
+
+            <div class="ticket-verified-footer">
+                <div style="max-width: 300px;">
+                    <p style="font-size: 11px; color: #999; line-height: 1.6; margin: 0;">
+                        <strong>Important:</strong> Please arrive at the boarding point 15 minutes before departure. High-speed Wi-Fi and charging ports are available on-board.
+                    </p>
+                </div>
+                <div style="text-align: right;">
+                    <img id="print-qr" src="" style="width: 80px; height: 80px; border: 1px solid #eee; padding: 4px; border-radius: 5px;">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Professional E-Ticket View Modal -->
+    <div id="invoice-modal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 500px; border-radius: 20px;">
+            <div class="modal-header" style="border: none; padding-bottom: 0;">
+                <span class="close-modal" onclick="document.getElementById('invoice-modal').style.display='none'">&times;</span>
+            </div>
+            <div class="modal-body" style="padding: 0 30px 30px;">
+                <div class="ticket-container" id="printable-area">
+                    <div class="ticket-header">
+                        <h2 style="color: var(--primary-color); margin: 0; font-size: 1.3rem;"><i class="fas fa-bus"></i> BUSTICKET E-TICKET</h2>
+                        <div class="ticket-ref-box">
+                            <span class="ticket-ref-label">Reference ID</span><br>
+                            <span class="ticket-ref-value" id="ticket-ref-id">#BT-0000</span>
+                        </div>
+                    </div>
+
+                    <div id="bill-content" class="ticket-grid">
+                        <!-- Dynamic Content mapping to .ticket-grid-item -->
+                    </div>
+
+                    <div class="ticket-total-display">
+                        <span style="color: #666; font-weight: 500; font-size: 14px;"><i class="fas fa-receipt"></i> Total Amount (Paid)</span>
+                        <span id="bill-total-amount" style="font-size: 24px; font-weight: 800; color: var(--primary-color);">$0</span>
+                    </div>
+
+                    <div class="ticket-verified-footer">
+                        <div style="max-width: 200px;">
+                            <p style="font-size: 10px; color: #999; line-height: 1.4; margin: 0;">
+                                <strong>Instructions:</strong> Please show this e-ticket during boarding. No physical copy required.
+                            </p>
+                        </div>
+                        <div style="text-align: right;">
+                            <img src="" id="booking-qr-img" style="width: 65px; height: 65px; display: block; border: 1px solid #eee; padding: 3px; border-radius: 5px;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="background: #f8f9fa; border-radius: 0 0 20px 20px; padding: 20px 30px;">
+                <div style="display: flex; gap: 15px;">
+                    <button onclick="window.print()" class="btn btn-primary" style="flex: 1; background: #333; border: none; padding: 12px;">
+                        <i class="fas fa-print"></i> Print Ticket
+                    </button>
+                    <button onclick="document.getElementById('invoice-modal').style.display='none'" class="btn btn-primary" style="flex: 1; padding: 12px;">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API = 'http://localhost:3000/api';
+        let allBookings = [];
+        let currentUser = null;
+
+        // Auth Check
+        const userStr = localStorage.getItem('loggedInUser');
+        if (!userStr) { window.location.href = 'signin.html'; }
+        const storedUser = JSON.parse(userStr);
+
+        // UI Initialization
+        async function initDashboard() {
+            updateSidebarUI(); // Show local data immediately
+            await fetchUserProfile();
+            await loadBookings();
+            updateSidebarUI(); // Update with server data
+        }
+
+        async function fetchUserProfile() {
+            try {
+                const res = await fetch(`${API}/auth/profile/${storedUser.id}`);
+                const data = await res.json();
+                if (data.success) {
+                    currentUser = data.user;
+                    fillProfileForm();
+                    document.getElementById('wallet-balance-val').textContent = `$${currentUser.wallet_balance.toFixed(2)}`;
+                }
+            } catch (err) { console.error('Failed to fetch profile', err); }
+        }
+
+        function updateSidebarUI() {
+            if (!storedUser) return;
+            const user = currentUser || storedUser;
+            const name = `${user.first_name || user.name || 'User'} ${user.last_name || ''}`;
+            document.getElementById('profile-name').textContent = name;
+            document.getElementById('profile-initial').textContent = name[0];
+            
+            // Handle Role & Action Buttons
+            const roleEl = document.getElementById('profile-role');
+            const actionContainer = document.getElementById('sidebar-action-container');
+            
+            if (user.role === 'admin' || user.role === 'operator') {
+                roleEl.textContent = user.role === 'admin' ? 'Administrator' : 'Bus Operator';
+                roleEl.style.color = 'var(--primary-color)';
+                roleEl.style.fontWeight = '700';
+                
+                actionContainer.innerHTML = `
+                    <a href="admin.html" class="btn btn-primary" style="display: block; width: 100%; padding: 10px; font-size: 13px; margin-top: 10px;">
+                        <i class="fas fa-user-shield"></i> Back to Admin
+                    </a>
+                    <a href="index.html" class="btn btn-outline" style="display: block; width: 100%; padding: 10px; font-size: 12px; margin-top: 10px; border-color: #eee; color: #666;">
+                        <i class="fas fa-home"></i> Back to Home
+                    </a>
+                `;
+            } else {
+                roleEl.textContent = 'Member';
+                roleEl.style.color = '#999';
+                roleEl.style.fontWeight = '400';
+                actionContainer.innerHTML = `
+                    <a href="index.html" class="btn btn-primary" style="display: block; width: 100%; padding: 10px; font-size: 13px; margin-top: 10px;">
+                        <i class="fas fa-home"></i> Back to Home
+                    </a>
+                `;
+            }
+        }
+
+        function fillProfileForm() {
+            if (!currentUser) return;
+            document.getElementById('edit-first-name').value = currentUser.first_name;
+            document.getElementById('edit-last-name').value  = currentUser.last_name;
+            document.getElementById('edit-email').value      = currentUser.email;
+            document.getElementById('edit-phone').value      = currentUser.phone || '';
+            document.getElementById('edit-address').value    = currentUser.address || '';
+            document.getElementById('edit-emergency').value  = currentUser.emergency_contact || '';
+        }
+
+        async function loadBookings() {
+            const list = document.getElementById('bookings-list');
+            if (!storedUser || !storedUser.id) {
+                list.innerHTML = `<p style="text-align:center; padding:40px; color:#888;">Session expired. <a href="signin.html">Login again</a></p>`;
+                return;
+            }
+            try {
+                const res = await fetch(`${API}/bookings/user/${storedUser.id}`);
+                const data = await res.json();
+                if (data.success) {
+                    allBookings = data.bookings;
+                    renderBookings(allBookings);
+                } else {
+                    list.innerHTML = `<div style="text-align:center; padding:40px; color:#888;">No bookings found. Try booking your first trip!</div>`;
+                }
+            } catch (err) {
+                list.innerHTML = `<p style="color:red; text-align:center; padding:40px;">Cannot connect to server. Ensure backend is running.</p>`;
+            }
+        }
+
+        function renderBookings(bookings) {
+            const list = document.getElementById('bookings-list');
+            if (bookings.length === 0) {
+                list.innerHTML = `<div style="text-align:center; padding:40px; color:#888;"><i class="fas fa-calendar-times" style="font-size:30px; margin-bottom:10px; display:block;"></i>No bookings found.</div>`;
+                return;
+            }
+
+            list.innerHTML = bookings.map(b => {
+                const tripDate = new Date(b.date);
+                const isPast = tripDate < new Date();
+                const isActive = b.status === 'confirmed' || b.status === 'pending';
+                const statusClass = b.status === 'cancelled' ? 'status-cancelled' : (isPast ? 'status-completed' : (b.status === 'pending' ? 'status-pending' : 'status-confirmed'));
+                const statusText = b.status === 'cancelled' ? 'Cancelled' : (isPast ? 'Completed' : (b.status === 'pending' ? 'Pending' : 'Confirmed'));
+
+                return `
+                    <div class="booking-card" style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #eee; border-radius: 12px; padding: 20px;">
+                        <div style="display: flex; gap: 20px; align-items: center;">
+                            <div style="background: #f8f9fa; width: 50px; height: 50px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--primary-color); font-size: 20px;">
+                                <i class="fas fa-bus"></i>
+                            </div>
+                            <div>
+                                <h4 style="margin-bottom: 4px;">${b.bus_name} <span style="font-size: 11px; color: #999; font-weight: 400; margin-left: 10px;">#${b.booking_ref}</span></h4>
+                                <p style="font-size: 13px; color: #666; margin-bottom: 3px;"><i class="fas fa-map-marker-alt" style="width:15px"></i> ${b.from_city} ➔ ${b.to_city}</p>
+                                <p style="font-size: 12px; color: #888;"><i class="far fa-calendar-alt" style="width:15px"></i> ${new Date(b.date).toLocaleDateString()} | ${b.departure}</p>
+                            </div>
+                        </div>
+                        <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 10px;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <span class="status-badge ${statusClass}" style="font-size: 10px; padding: 3px 10px;">${statusText}</span>
+                                <span style="font-size: 18px; font-weight: 700; color: var(--primary-color);">$${b.total_amount}</span>
+                            </div>
+                            <div class="booking-actions" style="display: flex; gap: 8px;">
+                                <button class="btn btn-primary btn-sm" onclick="viewTicket(${b.id})" style="padding: 6px 15px; font-size: 12px; background: rgba(var(--primary-rgb), 0.1); color: var(--primary-color); border: 1px solid var(--primary-color);">View Ticket</button>
+                                ${isActive && !isPast ? `<button class="btn btn-sm" onclick="cancelBooking(${b.id})" style="padding: 6px 15px; font-size: 12px; color: #ff5252; border: 1px solid rgba(255, 82, 82, 0.3); background: rgba(255, 82, 82, 0.05); transition: 0.3s;" onmouseover="this.style.background='rgba(255,82,82,0.15)'; this.style.borderColor='#ff5252';" onmouseout="this.style.background='rgba(255, 82, 82, 0.05)'; this.style.borderColor='rgba(255, 82, 82, 0.3)';">Cancel</button>` : ''}
+                                ${isPast && b.status !== 'cancelled' ? `<button class="btn btn-outline btn-sm" style="padding: 6px 15px; font-size: 12px; color: #f59e0b; border-color: #f59e0b;"><i class="fas fa-star"></i> Rate</button>` : ''}
+                            </div>
+                        </div>
+                    </div>`;
+            }).join('');
+        }
+
+        function filterBookings(type, el) {
+            document.querySelectorAll('.tab-pill').forEach(p => p.classList.remove('active'));
+            el.classList.add('active');
+
+            if (type === 'all') {
+                renderBookings(allBookings);
+            } else if (type === 'upcoming') {
+                const upcoming = allBookings.filter(b => new Date(b.date) >= new Date() && b.status !== 'cancelled');
+                renderBookings(upcoming);
+            } else if (type === 'completed') {
+                const past = allBookings.filter(b => new Date(b.date) < new Date() && b.status !== 'cancelled');
+                renderBookings(past);
+            }
+        }
+
+        function switchTab(tabId, el) {
+            document.querySelectorAll('.dash-nav-item').forEach(i => i.classList.remove('active'));
+            el.classList.add('active');
+
+            document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+            document.getElementById(`tab-${tabId}`).style.display = 'block';
+        }
+
+        // Profile Update
+        document.getElementById('profile-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('save-profile-btn');
+            btn.textContent = 'Saving...';
+            btn.disabled = true;
+
+            const body = {
+                first_name: document.getElementById('edit-first-name').value,
+                last_name:  document.getElementById('edit-last-name').value,
+                phone:      document.getElementById('edit-phone').value,
+                address:    document.getElementById('edit-address').value,
+                emergency_contact: document.getElementById('edit-emergency').value
+            };
+
+            try {
+                const res = await fetch(`${API}/auth/profile/${storedUser.id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                const data = await res.json();
+                if (data.success) {
+                    alert('Profile updated successfully!');
+                    fetchUserProfile();
+                    updateSidebarUI();
+                }
+            } catch (err) { alert('Failed to update profile.'); }
+
+            btn.textContent = 'Save Changes';
+            btn.disabled = false;
+        });
+
+        // Password Change
+        document.getElementById('password-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const oldPass = document.getElementById('old-password').value;
+            const newPass = document.getElementById('new-password').value;
+            const confPass = document.getElementById('confirm-password').value;
+
+            if (newPass !== confPass) {
+                alert('New passwords do not match!');
+                return;
+            }
+
+            const btn = document.getElementById('change-pass-btn');
+            btn.textContent = 'Updating...';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch(`${API}/auth/change-password`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: storedUser.id, oldPassword: oldPass, newPassword: newPass })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    alert('Password changed successfully!');
+                    this.reset();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            } catch (err) { alert('Failed to change password.'); }
+
+            btn.textContent = 'Update Password';
+            btn.disabled = false;
+        });
+
+        async function cancelBooking(id) {
+            if (!confirm('Are you sure you want to cancel this booking? A refund will be credited to your wallet.')) return;
+            try {
+                const res = await fetch(`${API}/bookings/${id}/cancel`, { method: 'PUT' });
+                const data = await res.json();
+                if (data.success) {
+                    alert(data.message);
+                    loadBookings();
+                    fetchUserProfile(); // Refresh wallet
+                }
+            } catch (err) { alert('Cancellation failed.'); }
+        }
+
+        function viewTicket(id) {
+            const b = allBookings.find(booking => booking.id === id);
+            if (!b) return;
+
+            document.getElementById('ticket-ref-id').textContent = `#${b.booking_ref}`;
+            document.getElementById('booking-qr-img').src = `https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${b.booking_ref}`;
+            
+            document.getElementById('bill-content').innerHTML = `
+                <div class="ticket-grid-item">
+                    <span class="ticket-grid-label">Passenger Name</span>
+                    <span class="ticket-grid-value">${b.passenger}</span>
+                </div>
+                <div class="ticket-grid-item">
+                    <span class="ticket-grid-label">Booking Date</span>
+                    <span class="ticket-grid-value">${new Date(b.booked_at).toLocaleDateString()}</span>
+                </div>
+                <div class="ticket-grid-item">
+                    <span class="ticket-grid-label">Route</span>
+                    <span class="ticket-grid-value"><i class="fas fa-location-arrow"></i> ${b.from_city} ➔ ${b.to_city}</span>
+                </div>
+                <div class="ticket-grid-item">
+                    <span class="ticket-grid-label">Travel Date & Time</span>
+                    <span class="ticket-grid-value"><i class="far fa-calendar-check"></i> ${b.date} | ${b.departure}</span>
+                </div>
+                <div class="ticket-grid-item" style="grid-column: span 2;">
+                    <span class="ticket-grid-label">Bus & Seats</span>
+                    <span class="ticket-grid-value"><i class="fas fa-couch"></i> ${b.bus_name} / Seats: ${b.seats}</span>
+                </div>
+            `;
+            document.getElementById('bill-total-amount').textContent = `$${b.total_amount}`;
+            document.getElementById('invoice-modal').style.display = 'flex';
+        }
+
+        function printTicket(id) {
+            const b = allBookings.find(booking => booking.id === id);
+            if (!b) return;
+
+            document.getElementById('print-ref-id').textContent = `#${b.booking_ref}`;
+            document.getElementById('print-total-amount').textContent = `$${b.total_amount}`;
+            document.getElementById('print-qr').src = `https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${b.booking_ref}`;
+            
+            const printArea = document.getElementById('ticket-data');
+            printArea.innerHTML = `
+                <div class="ticket-grid-item">
+                    <span class="ticket-grid-label">Passenger Name</span>
+                    <span class="ticket-grid-value">${b.passenger}</span>
+                </div>
+                <div class="ticket-grid-item">
+                    <span class="ticket-ref-label">Booking Date</span>
+                    <span class="ticket-grid-value">${new Date(b.booked_at).toLocaleDateString()}</span>
+                </div>
+                <div class="ticket-grid-item">
+                    <span class="ticket-grid-label">Route</span>
+                    <span class="ticket-grid-value"><i class="fas fa-location-arrow"></i> ${b.from_city} ➔ ${b.to_city}</span>
+                </div>
+                <div class="ticket-grid-item">
+                    <span class="ticket-grid-label">Travel Date & Time</span>
+                    <span class="ticket-grid-value"><i class="far fa-calendar-check"></i> ${b.date} | ${b.departure}</span>
+                </div>
+                <div class="ticket-grid-item" style="grid-column: span 2;">
+                    <span class="ticket-grid-label">Bus & Seats</span>
+                    <span class="ticket-grid-value"><i class="fas fa-couch"></i> ${b.bus_name} / Seats: ${b.seats}</span>
+                </div>
+            `;
+
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write('<html><head><title>BT-Ticket</title></head><body>');
+            printWindow.document.write(document.getElementById('ticket-print-template').innerHTML);
+            printWindow.document.write('</' + 'body>' + '</' + 'html>');
+            printWindow.document.close();
+            printWindow.print();
+            printWindow.close();
+        }
+
+        function logoutUser() {
+            localStorage.removeItem('loggedInUser');
+            localStorage.removeItem('authToken');
+            window.location.href = ('index.html');
+        }
+
+        // --- Real-time Validation Helpers ---
+        function validateField(el, regex) {
+            if (!el.value) {
+                el.classList.remove('is-valid', 'is-invalid');
+                return;
+            }
+            if (regex.test(el.value)) {
+                el.classList.add('is-valid');
+                el.classList.remove('is-invalid');
+            } else {
+                el.classList.add('is-invalid');
+                el.classList.remove('is-valid');
+            }
+        }
+
+        function validatePasswordMatch() {
+            const p1 = document.getElementById('new-password');
+            const p2 = document.getElementById('confirm-password');
+            if (!p2.value) {
+                p2.classList.remove('is-valid', 'is-invalid');
+                return;
+            }
+            if (p1.value === p2.value && p1.value.length >= 6) {
+                p2.classList.add('is-valid');
+                p2.classList.remove('is-invalid');
+            } else {
+                p2.classList.add('is-invalid');
+                p2.classList.remove('is-valid');
+            }
+        }
+
+        // Apply listeners for email/phone
+        document.getElementById('edit-phone').addEventListener('input', function() {
+            validateField(this, /^\+?[\d\s-]{10,}$/);
+        });
+        
+        // --- Initialize ---
+        initDashboard();
+
+    </script>
+</body>
+</html>

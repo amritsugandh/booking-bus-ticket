@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Bus - BusTicket</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="findbus-page">
+
+    <!-- Header Navigation -->
+    <header id="header" class="scrolled">
+        <div class="container nav-container">
+            <nav>
+                <a href="index.html" class="logo"><i class="fas fa-bus-alt"></i> BUSTICKET</a>
+                <ul class="nav-links" id="nav-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="findbus.html" class="active">Find Bus</a></li>
+                    <li><a href="index.html#services">Services</a></li>
+                    <li><a href="index.html#about">About</a></li>
+                    <li><a href="index.html#contact">Contact</a></li>
+                </ul>
+                <div class="menu-toggle" id="mobile-menu">
+                    <i class="fas fa-bars"></i>
+                </div>
+                <div class="btn-auth" id="auth-buttons">
+                    <a href="signin.html" class="btn btn-outline">Log In</a>
+                    <a href="signup.html" class="btn btn-primary">Sign Up</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container search-results">
+        
+        <!-- Refined Search Section -->
+        <form id="modify-search-form" style="background: white; padding: 25px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); margin-bottom: 40px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 150px;">
+                <label style="font-size: 12px; color: #999; display: block; margin-bottom: 5px;">FROM</label>
+                <input type="text" id="modify-from" style="width: 100%; border: 1px solid #ddd; padding: 10px; border-radius: 5px;" required>
+            </div>
+            <div style="flex: 1; min-width: 150px;">
+                <label style="font-size: 12px; color: #999; display: block; margin-bottom: 5px;">TO</label>
+                <input type="text" id="modify-to" style="width: 100%; border: 1px solid #ddd; padding: 10px; border-radius: 5px;" required>
+            </div>
+            <div style="flex: 1; min-width: 150px;">
+                <label style="font-size: 12px; color: #999; display: block; margin-bottom: 5px;">DATE</label>
+                <input type="date" id="modify-date" style="width: 100%; border: 1px solid #ddd; padding: 10px; border-radius: 5px;" required>
+            </div>
+            <button type="submit" class="btn btn-primary" style="padding: 12px 30px;">MODIFY</button>
+        </form>
+
+        <div style="display: flex; gap: 30px; flex-wrap: wrap;">
+            <!-- Filters Sidebar -->
+            <aside style="flex: 1; min-width: 250px;">
+                <div style="background: white; padding: 25px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05);">
+                    <h4 style="margin-bottom: 20px;"><i class="fas fa-filter"></i> Filters</h4>
+                    
+                    <div style="margin-bottom: 25px;">
+                        <p style="font-size: 14px; font-weight: 600; margin-bottom: 15px;">Bus Types</p>
+                        <label style="display: block; font-size: 14px; margin-bottom: 8px;"><input type="checkbox" class="filter-type" value="AC Sleeper"> AC Sleeper</label>
+                        <label style="display: block; font-size: 14px; margin-bottom: 8px;"><input type="checkbox" class="filter-type" value="Non-AC Sleeper"> Non-AC Sleeper</label>
+                        <label style="display: block; font-size: 14px; margin-bottom: 8px;"><input type="checkbox" class="filter-type" value="Luxury Volvos"> Luxury Volvos</label>
+                    </div>
+
+                    <div style="margin-bottom: 25px;">
+                        <p style="font-size: 14px; font-weight: 600; margin-bottom: 15px;">Departure Time</p>
+                        <label style="display: block; font-size: 14px; margin-bottom: 8px;"><input type="checkbox" class="filter-time" value="morning"> Morning (6AM - 12PM)</label>
+                        <label style="display: block; font-size: 14px; margin-bottom: 8px;"><input type="checkbox" class="filter-time" value="afternoon"> Afternoon (12PM - 6PM)</label>
+                        <label style="display: block; font-size: 14px; margin-bottom: 8px;"><input type="checkbox" class="filter-time" value="evening"> Evening (6PM - 12AM)</label>
+                    </div>
+
+                    <div>
+                        <p style="font-size: 14px; font-weight: 600; margin-bottom: 15px;">Price Range (Max: $<span id="price-val">200</span>)</p>
+                        <input type="range" id="filter-price" min="20" max="200" value="200" style="width: 100%;">
+                        <div style="display: flex; justify-content: space-between; font-size: 12px; color: #666; margin-top: 5px;">
+                            <span>$20</span>
+                            <span>$200</span>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Results Section -->
+            <div style="flex: 3; min-width: 300px;">
+                <h4 style="margin-bottom: 25px; color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,0.7); font-size: 1.4rem; font-weight: 700; letter-spacing: 0.5px;">Available Buses (<span id="result-count" style="color: var(--accent-color);">0</span>)</h4>
+                
+                <div id="bus-results-container">
+                    <!-- Dynamic Bus Cards will be injected here -->
+                </div>
+
+                <div id="no-results" style="display: none; text-align: center; padding: 50px;" class="glass-card">
+                    <i class="fas fa-bus" style="font-size: 50px; color: #ddd; margin-bottom: 20px;"></i>
+                    <h3>No Buses Found</h3>
+                    <p style="color: #666;">Try searching for a different route or date.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Seat Selection Modal -->
+    <div id="seat-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close-modal" onclick="closeSeatModal()">&times;</span>
+                <h3 style="text-align: center; margin-bottom: 10px;">Select Your Seats</h3>
+                <div class="seat-legend" style="display: flex; justify-content: center; gap: 15px; font-size: 12px;">
+                    <div style="display: flex; align-items: center; gap: 5px;">
+                        <span style="width: 12px; height: 12px; border: 1px solid #ddd; display: inline-block; border-radius: 3px;"></span> Available
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 5px;">
+                        <span style="width: 12px; height: 12px; background: var(--primary-color); display: inline-block; border-radius: 3px;"></span> Selected
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-body">
+                <div style="text-align: center; color: #888; font-size: 11px; margin-bottom: 15px; letter-spacing: 1px;">
+                    <i class="fas fa-dharmachakra"></i> FRONT
+                </div>
+                <div id="seat-grid" class="seat-grid">
+                    <!-- Seats will be rendered here -->
+                </div>
+                <div style="margin-top: 20px; padding: 0 10px;">
+                    <label style="font-size: 13px; color: #666; display: block; margin-bottom: 8px;">Passenger Name</label>
+                    <input type="text" id="passenger-name" placeholder="Enter full name" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px;">
+                    <span>Selected Seats:</span>
+                    <span id="selected-seats-list" style="font-weight: 600;">None</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 14px;">
+                    <span>Total Amount:</span>
+                    <span id="total-price-display" style="font-weight: 700; color: var(--primary-color); font-size: 18px;">$0</span>
+                </div>
+                <button id="confirm-btn" onclick="openPaymentGateway()" class="btn btn-primary" style="width: 100%; padding: 14px; border-radius: 10px;">Generate &amp; Pay Bill</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Gateway Modal -->
+    <div id="payment-modal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 400px; text-align: center;">
+            <div class="modal-header">
+                <span class="close-modal" onclick="closePaymentModal()">&times;</span>
+                <h3 style="text-align: center;">Payment Gateway</h3>
+            </div>
+            <div class="modal-body">
+                <p style="margin-bottom: 15px; font-size: 15px;">Scan the QR code to pay <strong id="pay-amount-display" style="color: var(--primary-color); font-size: 22px;">$0</strong></p>
+                <div style="background: white; padding: 20px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); display: inline-block; margin-bottom: 25px;">
+                    <img id="payment-qr-img" src="assets/qr.jpeg" alt="Payment QR Code" style="width: 200px; height: 200px; display: block; object-fit: contain;">
+                </div>
+                <p style="color: #666; font-size: 13px; margin-bottom: 20px;">Use Google Pay, PhonePe, or Paytm to scan and pay the amount.</p>
+                <button id="simulate-pay-btn" onclick="processPayment()" class="btn btn-primary" style="width: 100%; padding: 14px; border-radius: 10px; background: #28a745; border: none;">
+                    <i class="fas fa-check-circle"></i> I have made the payment
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Invoice Modal -->
+    <div id="invoice-modal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 480px; border-radius: 12px;">
+            <div class="modal-header" style="border: none; padding-bottom: 0;">
+                <span class="close-modal" onclick="closeInvoiceModal()">&times;</span>
+            </div>
+            <div class="modal-body" style="padding: 0 30px 30px;">
+                <!-- Success Header -->
+                <div id="booking-success-header" style="text-align: center; margin-bottom: 25px; padding-top: 10px;">
+                    <div style="width: 50px; height: 50px; background: #e8f5e9; color: #2fb344; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-size: 24px;">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <h2 style="margin: 0; color: #333; font-size: 1.4rem;">Booking Confirmed!</h2>
+                    <p style="color: #888; font-size: 13px; margin-top: 5px;">Your e-ticket is ready for your trip.</p>
+                </div>
+
+                <!-- NEW Professional E-Ticket View -->
+                <div class="ticket-container" id="printable-area">
+                    <div class="ticket-header">
+                        <h2 style="color: var(--primary-color); margin: 0; font-size: 1.3rem;"><i class="fas fa-bus"></i> BUSTICKET E-TICKET</h2>
+                        <div class="ticket-ref-box">
+                            <span class="ticket-ref-label">Reference ID</span><br>
+                            <span class="ticket-ref-value" id="ticket-ref-id">#BT-0000</span>
+                        </div>
+                    </div>
+
+                    <div id="bill-content" class="ticket-grid">
+                        <!-- Dynamic Content mapping to .ticket-grid-item -->
+                    </div>
+
+                    <div class="ticket-total-display">
+                        <span style="color: #666; font-weight: 500; font-size: 14px;"><i class="fas fa-receipt"></i> Total Amount (Paid)</span>
+                        <span id="bill-total-amount" style="font-size: 24px; font-weight: 800; color: var(--primary-color);">$0</span>
+                    </div>
+
+                    <div class="ticket-verified-footer">
+                        <div style="max-width: 200px;">
+                            <p style="font-size: 10px; color: #999; line-height: 1.4; margin: 0;">
+                                <strong>Instructions:</strong> Please show this e-ticket during boarding. No physical copy required.
+                            </p>
+                        </div>
+                        <div style="text-align: right;">
+                            <img src="" id="booking-qr" style="width: 65px; height: 65px; display: block; border: 1px solid #eee; padding: 3px; border-radius: 5px;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="window.print()" class="btn btn-primary btn-print" style="flex: 1; background: #333; padding: 12px;">
+                        <i class="fas fa-print"></i> Print
+                    </button>
+                    <button onclick="closeInvoiceModal()" class="btn btn-primary" style="flex: 1; padding: 12px;">Done</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer style="background: var(--bg-dark); color: white; padding: 40px 0 20px; margin-top: 100px;">
+        <div class="container" style="text-align: center; font-size: 13px; color: #888;">
+            <p style="margin-bottom: 15px;"><a href="admin.html" style="color: var(--accent-color);"><i class="fas fa-user-shield"></i> Admin Access</a></p>
+            <p>&copy; 2026 BusTicket Booking System. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        const API = 'http://localhost:3000/api';
+        let allBuses = [];
+
+        function getQueryParams() {
+            const p = new URLSearchParams(window.location.search);
+            return { from: p.get('from') || '', to: p.get('to') || '', date: p.get('date') || '' };
+        }
+
+        async function loadAndRenderBuses() {
+            const { from, to, date } = getQueryParams();
+            document.getElementById('modify-from').value = from;
+            document.getElementById('modify-to').value   = to;
+            document.getElementById('modify-date').value = date;
+
+            const container = document.getElementById('bus-results-container');
+            container.innerHTML = '<p style="text-align:center;color:#888;padding:30px;"><i class="fas fa-spinner fa-spin"></i> Loading buses from server...</p>';
+
+            try {
+                const params = new URLSearchParams();
+                if (from) params.append('from', from);
+                if (to)   params.append('to', to);
+                if (date) params.append('date', date);
+                const res  = await fetch(`${API}/buses?${params}`);
+                const data = await res.json();
+                allBuses   = data.buses || [];
+                applyFiltersAndRender();
+            } catch (err) {
+                container.innerHTML = `
+                  <div style="text-align:center;padding:40px;background:white;border-radius:15px;">
+                    <i class="fas fa-exclamation-triangle" style="font-size:50px;color:#f59e0b;margin-bottom:20px;"></i>
+                    <h3>Cannot connect to server</h3>
+                    <p style="color:#666;margin-top:10px;">Run the backend first:<br>
+                    <code style="background:#f0f0f0;padding:5px 10px;border-radius:5px;font-size:13px;">node server.js</code></p>
+                  </div>`;
+            }
+        }
+
+        function applyFiltersAndRender() {
+            const selectedTypes = Array.from(document.querySelectorAll('.filter-type:checked')).map(cb => cb.value);
+            const selectedTimes = Array.from(document.querySelectorAll('.filter-time:checked')).map(cb => cb.value);
+            const maxPrice = parseInt(document.getElementById('filter-price').value);
+            document.getElementById('price-val').textContent = maxPrice;
+
+            const filtered = allBuses.filter(bus => {
+                if (selectedTypes.length > 0 && !selectedTypes.some(t => bus.type.toLowerCase().includes(t.toLowerCase()))) return false;
+                if (bus.price > maxPrice) return false;
+                if (selectedTimes.length > 0) {
+                    const get24Hr = t => {
+                        let [time, mod] = t.split(' ');
+                        let [h] = time.split(':').map(Number);
+                        if (mod === 'PM' && h < 12) h += 12;
+                        if (mod === 'AM' && h === 12) h = 0;
+                        return h;
+                    };
+                    const hr = get24Hr(bus.departure);
+                    const ok = (selectedTimes.includes('morning') && hr >= 6 && hr < 12) ||
+                               (selectedTimes.includes('afternoon') && hr >= 12 && hr < 18) ||
+                               (selectedTimes.includes('evening') && (hr >= 18 || hr < 6));
+                    if (!ok) return false;
+                }
+                return true;
+            });
+            renderBusCards(filtered);
+        }
+
+        function renderBusCards(buses) {
+            const container = document.getElementById('bus-results-container');
+            const noResults = document.getElementById('no-results');
+            document.getElementById('result-count').textContent = buses.length;
+            container.innerHTML = '';
+            if (buses.length === 0) { noResults.style.display = 'block'; return; }
+            noResults.style.display = 'none';
+            buses.forEach(bus => {
+                const card = document.createElement('div');
+                card.className = 'bus-card';
+                card.innerHTML = `
+                    <div class="bus-info">
+                        <h3>${bus.name} <span style="font-size:12px;background:#e8f5e9;color:#2e7d32;padding:3px 8px;border-radius:50px;font-weight:400;">${bus.rating} <i class="fas fa-star" style="font-size:10px;"></i></span></h3>
+                        <p style="font-size:14px;color:#666;margin-bottom:15px;">${bus.type}</p>
+                        <div class="bus-meta">
+                            <span><i class="fas fa-map-marker-alt"></i> ${bus.from_city} → ${bus.to_city}</span>
+                            <span><i class="far fa-clock"></i> ${bus.departure} - ${bus.arrival}</span>
+                            <span><i class="fas fa-history"></i> ${bus.duration}</span>
+                        </div>
+                        <div style="margin-top:15px;font-size:13px;color:${bus.available_seats < 5 ? '#ff8a80':'#a5d6a7'};font-weight:700;letter-spacing:0.3px;">
+                            <i class="fas fa-couch"></i> ${bus.available_seats} Seats Left
+                        </div>
+                    </div>
+                    <div class="price-booking">
+                        ${bus.is_surge ? `<div style="font-size:11px;color:#d32f2f;font-weight:bold;margin-bottom:5px;"><i class="fas fa-fire"></i> High Demand</div>` : ''}
+                        <div class="price">
+                            ${bus.is_surge ? `<span style="font-size:14px;text-decoration:line-through;color:rgba(255,255,255,0.5);margin-right:5px;">$${bus.original_price}</span>` : ''}
+                            $${bus.price}
+                        </div>
+                        <button class="btn btn-primary" onclick="openSeatModal(${bus.id})">SELECT SEATS</button>
+                    </div>`;
+                container.appendChild(card);
+            });
+        }
+
+        document.getElementById('modify-search-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const from = document.getElementById('modify-from').value;
+            const to   = document.getElementById('modify-to').value;
+            const date = document.getElementById('modify-date').value;
+            window.location.href = `findbus.html?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&date=${encodeURIComponent(date)}`;
+        });
+
+        let currentBus = null, selectedSeats = [];
+
+        function openSeatModal(busId) {
+            const userStr = localStorage.getItem('loggedInUser');
+            if (!userStr) {
+                alert('Please log in to book a ticket.');
+                window.location.href = 'signin.html';
+                return;
+            }
+            
+            currentBus = allBuses.find(b => b.id == busId);
+            if (!currentBus) return;
+            selectedSeats = [];
+            document.getElementById('passenger-name').value = '';
+            const grid = document.getElementById('seat-grid');
+            document.getElementById('seat-modal').style.display = 'flex';
+            grid.innerHTML = '';
+            for (let i = 1; i <= 32; i++) {
+                const s = document.createElement('div');
+                const isBooked = currentBus.booked_seats && currentBus.booked_seats.includes(i.toString());
+                
+                s.className = isBooked ? 'seat booked' : 'seat available';
+                s.textContent = i;
+                
+                if (!isBooked) {
+                    s.onclick = () => toggleSeat(i, s);
+                } else {
+                    s.title = "Seat already booked";
+                }
+                grid.appendChild(s);
+            }
+            updateSeatSummary();
+        }
+
+        function closeSeatModal()    { document.getElementById('seat-modal').style.display = 'none'; }
+        function closeInvoiceModal() { document.getElementById('invoice-modal').style.display = 'none'; }
+
+        function openPaymentGateway() {
+            if (!selectedSeats.length) { alert('Please select at least one seat.'); return; }
+            const name = document.getElementById('passenger-name').value.trim();
+            if (!name) { alert('Please enter passenger name.'); return; }
+
+            const total = selectedSeats.length * currentBus.price;
+            document.getElementById('pay-amount-display').textContent = `$${total}`;
+            // Use the user's provided QR code
+            document.getElementById('payment-qr-img').src = 'assets/qr.jpeg';
+            
+            document.getElementById('seat-modal').style.display = 'none';
+            document.getElementById('payment-modal').style.display = 'flex';
+        }
+
+        function closePaymentModal() {
+            document.getElementById('payment-modal').style.display = 'none';
+            document.getElementById('seat-modal').style.display = 'flex';
+        }
+
+        function processPayment() {
+            const btn = document.getElementById('simulate-pay-btn');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying Payment...';
+            btn.disabled = true;
+
+            setTimeout(() => {
+                document.getElementById('payment-modal').style.display = 'none';
+                btn.innerHTML = '<i class="fas fa-check-circle"></i> I have made the payment';
+                btn.disabled = false;
+                confirmBooking(); 
+            }, 1500);
+        }
+
+        function toggleSeat(num, el) {
+            const idx = selectedSeats.indexOf(num);
+            if (idx > -1) { selectedSeats.splice(idx, 1); el.className = 'seat available'; }
+            else           { selectedSeats.push(num);       el.className = 'seat selected'; }
+            updateSeatSummary();
+        }
+
+        function updateSeatSummary() {
+            document.getElementById('selected-seats-list').textContent = selectedSeats.length ? selectedSeats.join(', ') : 'None';
+            document.getElementById('total-price-display').textContent = `$${selectedSeats.length * currentBus.price}`;
+        }
+
+        async function confirmBooking() {
+            const name = document.getElementById('passenger-name').value.trim();
+
+            try {
+                const user = JSON.parse(localStorage.getItem('loggedInUser') || '{}');
+                const res  = await fetch(`${API}/bookings`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ bus_id: currentBus.id, passenger: name, seats: selectedSeats, user_id: user.id || null })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    const b = data.booking;
+                    document.getElementById('ticket-ref-id').textContent = `#${b.booking_ref}`;
+                    document.getElementById('booking-qr').src = `https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${b.booking_ref}`;
+                    document.getElementById('bill-content').innerHTML = `
+                        <div class="ticket-grid-item">
+                            <span class="ticket-grid-label">Passenger Name</span>
+                            <span class="ticket-grid-value">${name}</span>
+                        </div>
+                        <div class="ticket-grid-item">
+                            <span class="ticket-grid-label">Route</span>
+                            <span class="ticket-grid-value"><i class="fas fa-location-arrow"></i> ${b.from} ➔ ${b.to}</span>
+                        </div>
+                        <div class="ticket-grid-item">
+                            <span class="ticket-grid-label">Travel Date & Time</span>
+                            <span class="ticket-grid-value"><i class="far fa-calendar-check"></i> ${b.date} | ${currentBus.departure}</span>
+                        </div>
+                        <div class="ticket-grid-item">
+                            <span class="ticket-grid-label">Bus & Seats</span>
+                            <span class="ticket-grid-value"><i class="fas fa-couch"></i> ${b.bus_name} / Seats: ${b.seats}</span>
+                        </div>
+                    `;
+                    document.getElementById('bill-total-amount').textContent = `$${b.total_amount}`;
+                    
+                    // Force display to flex and ensure it's on top
+                    const invModal = document.getElementById('invoice-modal');
+                    invModal.style.display = 'flex';
+                    invModal.style.zIndex = '2000'; 
+                    
+                    // Add newly booked seats to currentBus manually so UI updates cleanly
+                    if(currentBus) {
+                        if(!currentBus.booked_seats) currentBus.booked_seats = [];
+                        currentBus.booked_seats.push(...selectedSeats.map(String));
+                        currentBus.seats = data.remaining_seats;
+                    }
+                    
+                    closeSeatModal();
+                    applyFiltersAndRender();
+                } else {
+                    alert('Booking failed: ' + data.message);
+                }
+            } catch (err) {
+                console.error('Booking Error:', err);
+                alert('An error occurred during booking. Please check your connection or try again.');
+            }
+        }
+
+        document.querySelectorAll('.filter-type, .filter-time').forEach(el => el.addEventListener('change', applyFiltersAndRender));
+        document.getElementById('filter-price').addEventListener('input', applyFiltersAndRender);
+
+        loadAndRenderBuses();
+
+
+        const mobileMenu = document.getElementById('mobile-menu');
+        const navLinks   = document.getElementById('nav-links');
+        mobileMenu.addEventListener('click', function() {
+            navLinks.classList.toggle('active');
+            mobileMenu.querySelector('i').classList.toggle('fa-bars');
+            mobileMenu.querySelector('i').classList.toggle('fa-times');
+        });
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+                mobileMenu.querySelector('i').classList.replace('fa-times', 'fa-bars');
+            });
+        });
+
+        // ── Auth UI Logic ──────────────────────────────────────────────────
+        function checkAuthStatus() {
+            const userStr = localStorage.getItem('loggedInUser');
+            const authContainer = document.getElementById('auth-buttons');
+            
+            if (userStr && authContainer) {
+                const user = JSON.parse(userStr);
+                const firstName = user.name || user.first_name || user.username || 'User';
+                
+                // Simplify navbar for logged-in users
+                const navLinks = document.getElementById('nav-links');
+                if (navLinks) {
+                    navLinks.innerHTML = `
+                        <li><a href="findbus.html" class="active">Find Bus</a></li>
+                        <li><a href="dashboard.html">Dashboard</a></li>
+                    `;
+                }
+
+                authContainer.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <a href="dashboard.html" title="Go to Dashboard: ${firstName}" class="profile-avatar">
+                            ${firstName[0].toUpperCase()}
+                        </a>
+                        <button onclick="logoutUser()" class="btn btn-outline" style="padding: 8px 18px; font-size: 13px;">Logout</button>
+                    </div>
+                `;
+            }
+        }
+
+        function logoutUser() {
+            localStorage.removeItem('loggedInUser');
+            localStorage.removeItem('authToken');
+            window.location.reload();
+        }
+
+        checkAuthStatus();
+    </script>
+</body>
+</html>

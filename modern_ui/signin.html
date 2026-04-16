@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In - BusTicket</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+        .divider { display: flex; align-items: center; gap: 15px; margin: 20px 0; color: #aaa; font-size: 13px; }
+        .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: #ddd; }
+        .google-btn {
+            display: flex; align-items: center; justify-content: center; gap: 12px;
+            width: 100%; padding: 12px; border: 1.5px solid #ddd; border-radius: 50px;
+            background: white; font-size: 15px; font-weight: 600; color: #333;
+            cursor: pointer; transition: all 0.3s ease; font-family: 'Poppins', sans-serif;
+        }
+        .google-btn:hover { background: #f5f5f5; border-color: #aaa; box-shadow: 0 3px 10px rgba(0,0,0,0.1); transform: translateY(-1px); }
+        .google-btn img { width: 22px; height: 22px; }
+        .alert { display: none; padding: 12px 16px; border-radius: 10px; font-size: 14px; margin-bottom: 15px; }
+        .alert-success { background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }
+        .alert-error { background: #fdecea; color: #c62828; border: 1px solid #f5c6cb; }
+    </style>
+</head>
+<body class="auth-page">
+
+    <div class="auth-container glass-light">
+        <a href="index.html" style="font-size: 14px; color: var(--primary-color); display: block; margin-bottom: 20px;"><i class="fas fa-arrow-left"></i> Back to Home</a>
+        <div style="text-align: center; margin-bottom: 25px;">
+            <a href="index.html" class="logo" style="color: var(--primary-color);"><i class="fas fa-bus-alt"></i> BUSTICKET</a>
+        </div>
+        <h2 style="text-align: center; font-size: 1.6rem; margin-bottom: 25px;">Welcome Back!</h2>
+
+        <div class="alert alert-success" id="alert-success" style="align-items: center; gap: 8px;"><i class="fas fa-check-circle"></i> <span id="success-msg"></span></div>
+        <div class="alert alert-error" id="alert-error" style="align-items: center; gap: 8px;"><i class="fas fa-exclamation-circle"></i> <span id="error-msg"></span></div>
+
+        <!-- Google Sign-In -->
+        <button class="google-btn" id="google-btn" onclick="triggerGoogleSignIn()">
+            <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google">
+            Sign in with Google
+        </button>
+
+        <div class="divider">OR</div>
+
+        <form class="auth-form" id="signin-form">
+            <div class="input-group">
+                <label>Username or Email</label>
+                <input type="text" id="login-username" placeholder="Enter your username or email" required>
+            </div>
+            <div class="input-group">
+                <label>Password</label>
+                <div style="position: relative;">
+                    <input type="password" id="login-password" placeholder="Enter your password" required style="padding-right: 40px;">
+                    <i class="fas fa-eye" id="togglePassword" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #777;"></i>
+                </div>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; font-size: 13px;">
+                <label style="display: flex; align-items: center; cursor: pointer;">
+                    <input type="checkbox" style="width: auto; margin-right: 5px; margin-bottom: 0;"> Remember me
+                </label>
+                <a href="#" style="color: var(--primary-color);">Forgot Password?</a>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 16px;" id="login-btn">
+                <i class="fas fa-sign-in-alt"></i> Log In
+            </button>
+        </form>
+        <p style="text-align: center; margin-top: 20px; font-size: 14px;">
+            Don't have an account? <a href="signup.html" style="color: var(--primary-color); font-weight: 600;">Sign Up</a>
+        </p>
+    </div>
+
+    <script>
+        const API = 'http://localhost:3000/api';
+        const GOOGLE_CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID';
+
+        // Redirect if already logged in
+        if (localStorage.getItem('loggedInUser')) {
+            window.location.href = 'index.html';
+        }
+        function showAlert(type, message) {
+            document.getElementById('alert-success').style.display = 'none';
+            document.getElementById('alert-error').style.display = 'none';
+            if (type === 'success') {
+                document.getElementById('success-msg').textContent = message;
+                document.getElementById('alert-success').style.display = 'flex';
+            } else {
+                document.getElementById('error-msg').textContent = message;
+                document.getElementById('alert-error').style.display = 'flex';
+            }
+        }
+
+        // ── Toggle Password Visibility ───────────────────────────────────────
+        document.getElementById('togglePassword').addEventListener('click', function() {
+            const passwordInput = document.getElementById('login-password');
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            this.classList.toggle('fa-eye-slash');
+        });
+
+        // ── Login Form Submit ────────────────────────────────────────────────
+        document.getElementById('signin-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('login-btn');
+            btn.textContent = 'Logging in...';
+            btn.style.opacity = '0.6';
+            btn.disabled = true;
+
+            const body = {
+                username: document.getElementById('login-username').value,
+                password: document.getElementById('login-password').value
+            };
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const redirectUrl = urlParams.get('redirect') || 'index.html';
+            const endpoint = redirectUrl.includes('admin.html') ? `${API}/auth/admin-login` : `${API}/auth/login`;
+
+            try {
+                const res = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    localStorage.setItem('authToken', data.token);
+                    localStorage.setItem('loggedInUser', JSON.stringify(data.user));
+                    showAlert('success', `Welcome back, ${data.user.name}! Redirecting...`);
+                    setTimeout(() => window.location.href = redirectUrl, 1500);
+                } else {
+                    showAlert('error', data.message);
+                    btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Log In';
+                    btn.style.opacity = '1';
+                    btn.disabled = false;
+                }
+            } catch (err) {
+                showAlert('error', 'Cannot connect to server. Make sure the backend is running (node server.js).');
+                btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Log In';
+                btn.style.opacity = '1';
+                btn.disabled = false;
+            }
+        });
+
+        // ── Google Sign-In ────────────────────────────────────────────────────
+        function triggerGoogleSignIn() {
+            if (GOOGLE_CLIENT_ID === 'YOUR_GOOGLE_CLIENT_ID') {
+                handleGoogleLogin({ name: 'Demo User', email: 'demo@gmail.com', picture: '' });
+                return;
+            }
+            google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: handleCredentialResponse });
+            google.accounts.id.prompt();
+        }
+
+        function handleCredentialResponse(response) {
+            const payload = JSON.parse(atob(response.credential.split('.')[1]));
+            handleGoogleLogin(payload);
+        }
+
+        async function handleGoogleLogin(user) {
+            document.getElementById('google-btn').textContent = 'Connecting...';
+            try {
+                const res = await fetch(`${API}/auth/google`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: user.name, email: user.email, picture: user.picture || '', google_id: user.sub || user.email })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    localStorage.setItem('authToken', data.token);
+                    localStorage.setItem('loggedInUser', JSON.stringify(data.user));
+                    showAlert('success', `Welcome, ${data.user.name}! Redirecting...`);
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const redirectUrl = urlParams.get('redirect') || 'index.html';
+                    setTimeout(() => window.location.href = redirectUrl, 1500);
+                } else {
+                    showAlert('error', data.message);
+                    document.getElementById('google-btn').innerHTML = '<img src="https://www.svgrepo.com/show/475656/google-color.svg" style="width:22px;height:22px;"> Sign in with Google';
+                }
+            } catch (err) {
+                showAlert('error', 'Cannot connect to server. Make sure the backend is running.');
+                document.getElementById('google-btn').innerHTML = '<img src="https://www.svgrepo.com/show/475656/google-color.svg" style="width:22px;height:22px;"> Sign in with Google';
+            }
+        }
+    </script>
+</body>
+</html>
